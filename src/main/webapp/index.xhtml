@@ -3,23 +3,100 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>banco de agricultura </title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-
+    <title>Banco de agricultura  - Iniciar Sesión</title>
+    <meta charset="UTF-8" />
     <style>
-        body { background-color: #f7f9fb; font-family: 'Segoe UI', Arial, sans-serif; }
-        .container { max-width: 100%; margin-top: 40px; }
-    </style>
-    <script type="text/javascript">
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0c92a4;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
 
-    </script>
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.89);
+            border-radius: 15px;
+            padding: 40px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #006B3F;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #1f4449;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #007A45;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .logo {
+            width: 90px;
+            margin-bottom: 15px;
+        }
+    </style>
 </h:head>
 
 <h:body>
-    <div class="container">
-    </div>
+    <div class="login-card">
+        <h:form>
+            <img src="./images/bancoagricultura2.png" alt="Logo Banco Agrícola" class="logo" />
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <h2>Iniciar Sesión</h2>
+
+            <div class="form-group">
+                <h:outputLabel for="username" value="Usuario:" />
+                <h:inputText id="username" value="#{loginBean.username}" required="true"
+                             requiredMessage="El usuario es obligatorio." />
+            </div>
+
+            <div class="form-group">
+                <h:outputLabel for="password" value="Contraseña:" />
+                <h:inputSecret id="password" value="#{loginBean.password}" required="true"
+                               requiredMessage="La contraseña es obligatoria." />
+            </div>
+
+            <h:commandButton value="Entrar" action="#{loginBean.login}" />
+
+            <h:messages styleClass="error" globalOnly="true" />
+
+            <h:outputText value="#{loginBean.mensajeError}" styleClass="error" rendered="#{not empty loginBean.mensajeError}" />
+        </h:form>
+    </div>
 </h:body>
 </html>
