@@ -26,7 +26,21 @@ public class LoginBean implements Serializable {
 
         if (usuarioLogeado != null) {
             mensajeError = null;
-            return "inicio.xhtml?faces-redirect=true";
+            switch (usuarioLogeado.getTipoUsuario()) {
+                case "CAJERO":
+                    return "iniciocajero.xhtml?faces-redirect=true";
+                case "CLIENTE":
+                    return "inicio.xhtml?faces-redirect=true";
+                case "DEPENDIENTE":
+                    return "iniciodependiente.xhtml?faces-redirect=true";
+                case "GERENTE_SUCURSAL":
+                    return "iniciogerentesucursal.xhtml?faces-redirect=true";
+                case "GERENTE_GENERAL":
+                    return "iniciogerentegeneral.xhtml?faces-redirect=true";
+                default:
+                    return "login.xhtml?error=rol_invalido";
+            }
+
         } else {
             mensajeError = "Usuario o contraseña incorrectos o cuenta inactiva.";
             return null;
