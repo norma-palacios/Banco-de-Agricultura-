@@ -3,13 +3,104 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>Banco de agricultura  - inicio</title>
+    <title>Banco de agricultura - Mi Panel</title>
     <meta charset="UTF-8" />
     <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; }
+        .header { background: #006B3F; color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header .user { font-size: 1.1em; }
+        .header .logout-btn { background: #1f4449; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        h2 { color: #006B3F; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; }
 
+        /* Estilos para la tabla de cuentas */
+        .tabla-cuentas { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .tabla-cuentas th, .tabla-cuentas td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .tabla-cuentas th { background-color: #f9f9f9; }
+        .no-cuentas { color: #777; font-style: italic; }
+
+        /* Formulario de nueva cuenta */
+        .form-nueva-cuenta { margin-top: 20px; background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+        .form-group { margin-bottom: 10px; }
+        select, input[type="submit"] { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+        input[type="submit"] { background-color: #007A45; color: white; cursor: pointer; }
+
+        .messages { margin: 15px 0; }
+        .msg-info { color: green; }
+        .msg-warn { color: orange; }
+        .msg-error { color: red; }
     </style>
 </h:head>
 
 <h:body>
+    <div class="header">
+        <div class="user">
+            Bienvenido, <strong>#{loginBean.usuarioLogeado.username}</strong>
+        </div>
+        <h:form>
+            <h:commandLink value="Cerrar Sesión" action="#{loginBean.logout}" styleClass="logout-btn" />
+        </h:form>
+    </div>
+
+    <div class="container">
+        <h:messages globalOnly="false" styleClass="messages"
+                    infoClass="msg-info" warnClass="msg-warn" errorClass="msg-error"/>
+
+        <h2>Mis Cuentas Bancarias</h2>
+
+        <h:dataTable value="#{cuentasBean.listaCuentas}" var="cuenta"
+                     styleClass="tabla-cuentas" rendered="#{not empty cuentasBean.listaCuentas}">
+
+            <h:column>
+                <f:facet name="header">N° de Cuenta</f:facet>
+                #{cuenta.numeroCuenta}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Tipo</f:facet>
+                #{cuenta.tipoCuenta}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Saldo</f:facet>
+                <h:outputText value="#{cuenta.saldo}">
+                    <f:convertNumber type="currency" currencySymbol="$" />
+                </h:outputText>
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Estado</f:facet>
+                #{cuenta.estado}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Fecha de Apertura</f:facet>
+                <h:outputText value="#{cuenta.fechaApertura}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                </h:outputText>
+            </h:column>
+        </h:dataTable>
+
+        <h:outputText value="Aún no tienes cuentas bancarias registradas."
+                      styleClass="no-cuentas"
+                      rendered="#{empty cuentasBean.listaCuentas}"/>
+
+        <h:form styleClass="form-nueva-cuenta" rendered="#{cuentasBean.listaCuentas.size() &lt; 3}">
+            <h3>Crear Nueva Cuenta</h3>
+            <div class="form-group">
+                <h:outputLabel for="tipoCuenta" value="Seleccionar Tipo de Cuenta: " />
+                <h:selectOneMenu id="tipoCuenta" value="#{cuentasBean.tipoCuentaNueva}" required="true">
+                    <f:selectItem itemValue="AHORRO" itemLabel="Cuenta de Ahorro" />
+                    <f:selectItem itemValue="CORRIENTE" itemLabel="Cuenta Corriente" />
+                </h:selectOneMenu>
+            </div>
+
+            <h:commandButton value="Crear Cuenta" action="#{cuentasBean.crearCuenta}" />
+        </h:form>
+
+        <h:outputText value="Has alcanzado el límite de 3 cuentas."
+                      styleClass="no-cuentas"
+                      rendered="#{cuentasBean.listaCuentas.size() &gt;= 3}"/>
+    </div>
 </h:body>
 </html>

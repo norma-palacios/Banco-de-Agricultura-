@@ -1,12 +1,20 @@
 package com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
 
 @Entity
 @Table(name = "usuarios", schema = "banco_agricultura")
 public class Usuario implements Serializable {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +36,28 @@ public class Usuario implements Serializable {
     @Column(name = "estado", nullable = false)
     private String estado;
 
-    @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
 
-    // Getters y Setters
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha_creacion")
+    private Date fechaCreacion;
+
+
+    @OneToMany(
+            mappedBy = "cliente",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    private List<CuentaBancaria> cuentasBancarias;
+
+    public List<CuentaBancaria> getCuentasBancarias() {
+        return cuentasBancarias;
+    }
+
+    public void setCuentasBancarias(List<CuentaBancaria> cuentasBancarias) {
+        this.cuentasBancarias = cuentasBancarias;
+    }
+
+
     public int getIdUsuario() { return idUsuario; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
 
@@ -50,6 +76,6 @@ public class Usuario implements Serializable {
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
 
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public Date getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(Date fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 }

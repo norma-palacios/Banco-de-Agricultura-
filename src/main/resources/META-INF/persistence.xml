@@ -15,7 +15,7 @@
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/banco_agricultura?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
             <property name="javax.persistence.jdbc.user" value="root"/>
 
-            <property name="javax.persistence.jdbc.password" value="Root123"/>
+            <property name="javax.persistence.jdbc.password" value="hola123"/>
 
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
