@@ -69,6 +69,20 @@
             width: 90px;
             margin-bottom: 15px;
         }
+
+        /* --- ESTILOS AÑADIDOS --- */
+        .link-registro {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .link-registro a {
+            color: #006B3F;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .link-registro a:hover {
+            text-decoration: underline;
+        }
     </style>
 </h:head>
 
@@ -96,6 +110,11 @@
             <h:messages styleClass="error" globalOnly="true" />
 
             <h:outputText value="#{loginBean.mensajeError}" styleClass="error" rendered="#{not empty loginBean.mensajeError}" />
+
+            <div class="link-registro">
+                <h:link value="¿No tienes cuenta? Regístrate aquí"
+                        outcome="registro.xhtml" />
+            </div>
         </h:form>
     </div>
 </h:body>

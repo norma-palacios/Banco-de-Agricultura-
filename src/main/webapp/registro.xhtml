@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+<h:head>
+    <title>Banco de agricultura - Registro de Cliente</title>
+    <meta charset="UTF-8" />
+    <style>
+
+        body { font-family: 'Segoe UI', sans-serif; background: #0c92a4; margin: 20px; }
+        .login-card { background-color: rgba(255, 255, 255, 0.89); border-radius: 15px; padding: 40px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; margin: auto; }
+        h2 { color: #006B3F; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-grid { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; }
+        .form-grid label { font-weight: bold; }
+        input[type="text"], input[type="password"], input[type="date"] { width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        input[type="submit"] { width: 100%; background-color: #1f4449; color: white; border: none; border-radius: 8px; padding: 10px; font-size: 15px; cursor: pointer; transition: 0.3s; }
+        input[type="submit"]:hover { background-color: #007A45; }
+        .logo { width: 90px; margin-bottom: 15px; }
+        .link-login { margin-top: 20px; }
+        .link-login a { color: #006B3F; text-decoration: none; }
+
+
+        .error { color: red; margin-top: 10px; font-size: 13px; }
+
+
+        .error-field {
+            color: #D8000C;
+            font-size: 0.85em;
+            display: block;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+    </style>
+</h:head>
+
+<h:body>
+    <div class="login-card">
+
+        <img src="./images/bancoagricultura2.png" alt="Logo Banco Agrícola" class="logo" />
+        <h2>Registro de Nuevo Cliente</h2>
+
+        <h:form>
+
+            <h:messages styleClass="error" globalOnly="false" layout="table" />
+
+            <div classs="form-grid">
+
+                <div class="form-group">
+                    <h:outputLabel for="dui" value="DUI:" />
+                    <h:inputText id="dui" value="#{registroBean.dui}"
+                                 required="true" requiredMessage="El DUI es obligatorio."
+                                 validatorMessage="El DUI debe contener solo números (sin guiones)."> <f:validateRegex pattern="^[0-9]+$" />
+                    </h:inputText>
+                    <h:message for="dui" styleClass="error-field" /> </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="nombres" value="Nombres:" />
+                    <h:inputText id="nombres" value="#{registroBean.nombres}" required="true" requiredMessage="El nombre es obligatorio."/>
+                    <h:message for="nombres" styleClass="error-field" />
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="apellidos" value="Apellidos:" />
+                    <h:inputText id="apellidos" value="#{registroBean.apellidos}" required="true" requiredMessage="El apellido es obligatorio."/>
+                    <h:message for="apellidos" styleClass="error-field" />
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="fechaNac" value="Fecha de Nacimiento:"/>
+                    <h:inputText id="fechaNac" value="#{registroBean.fechaNacimiento}"
+                                 required="true" requiredMessage="La fecha es obligatoria."
+                                 a:type="date">
+                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                    </h:inputText>
+                    <h:message for="fechaNac" styleClass="error-field" />
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="email" value="Email:" />
+                    <h:inputText id="email" value="#{registroBean.email}"
+                                 required="true" requiredMessage="El email es obligatorio."
+                                 validatorMessage="El formato del email no es válido (ej. correo@dominio.com)."> <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+                    </h:inputText>
+                    <h:message for="email" styleClass="error-field" /> </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="telefono" value="Teléfono:" />
+                    <h:inputText id="telefono" value="#{registroBean.telefono}"
+                                 validatorMessage="El teléfono debe contener solo números."> <f:validateRegex pattern="^[0-9]+$" />
+                    </h:inputText>
+                    <h:message for="telefono" styleClass="error-field" /> </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="direccion" value="Dirección:" />
+                    <h:inputText id="direccion" value="#{registroBean.direccion}"/>
+                    <h:message for="direccion" styleClass="error-field" />
+                </div>
+
+                <hr/>
+
+                <div class="form-group">
+                    <h:outputLabel for="username" value="Nombre de Usuario:"/>
+                    <h:inputText id="username" value="#{registroBean.username}" required="true" requiredMessage="El nombre de usuario es obligatorio."/>
+                    <h:message for="username" styleClass="error-field" />
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="password" value="Contraseña:"/>
+                    <h:inputSecret id="password" value="#{registroBean.password}" required="true" requiredMessage="La contraseña es obligatoria."/>
+                    <h:message for="password" styleClass="error-field" />
+                </div>
+
+            </div>
+
+            <br/>
+
+            <h:commandButton value="Crear Cuenta" action="#{registroBean.registrar}" />
+
+            <div class="link-login">
+                <h:link value="¿Ya tienes cuenta? Inicia Sesión" outcome="index.xhtml" />
+            </div>
+
+        </h:form>
+    </div>
+</h:body>
+</html>

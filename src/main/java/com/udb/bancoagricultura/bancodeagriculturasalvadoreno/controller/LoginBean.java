@@ -6,6 +6,10 @@ import com.udb.bancoagricultura.bancodeagriculturasalvadoreno.service.LoginServi
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.io.IOException;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 @Named
 @SessionScoped
@@ -29,11 +33,36 @@ public class LoginBean implements Serializable {
         }
     }
 
-    public String logout() {
-        usuarioLogeado = null;
-        username = null;
-        password = null;
-        return "login.xhtml?faces-redirect=true";
+
+    public String logout() throws IOException {
+
+
+        FacesContext context = FacesContext.getCurrentInstance();
+
+
+        ExternalContext externalContext = context.getExternalContext();
+
+
+        HttpSession session = (HttpSession) externalContext.getSession(false);
+
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+
+        this.usuarioLogeado = null;
+        this.username = null;
+        this.password = null;
+
+
+        externalContext.redirect(externalContext.getRequestContextPath() + "/index.xhtml");
+
+
+        context.responseComplete();
+
+
+        return null;
     }
 
     // Getters y Setters
