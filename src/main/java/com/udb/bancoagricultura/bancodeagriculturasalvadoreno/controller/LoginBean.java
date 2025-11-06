@@ -21,6 +21,7 @@ public class LoginBean implements Serializable {
 
     private final LoginServices loginService = new LoginServices();
 
+
     public String login() {
         usuarioLogeado = loginService.validarUsuario(username, password);
 
@@ -38,7 +39,8 @@ public class LoginBean implements Serializable {
                 case "GERENTE_GENERAL":
                     return "iniciogerentegeneral.xhtml?faces-redirect=true";
                 default:
-                    return "login.xhtml?error=rol_invalido";
+
+                    return "index.xhtml?error=rol_invalido";
             }
 
         } else {
@@ -49,34 +51,37 @@ public class LoginBean implements Serializable {
 
 
     public String logout() throws IOException {
-
-
         FacesContext context = FacesContext.getCurrentInstance();
-
-
         ExternalContext externalContext = context.getExternalContext();
-
-
         HttpSession session = (HttpSession) externalContext.getSession(false);
-
 
         if (session != null) {
             session.invalidate();
         }
 
-
         this.usuarioLogeado = null;
         this.username = null;
         this.password = null;
 
-
         externalContext.redirect(externalContext.getRequestContextPath() + "/index.xhtml");
-
-
         context.responseComplete();
-
-
         return null;
+    }
+
+
+    public void verificarSesion() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = context.getExternalContext();
+
+        if (this.usuarioLogeado == null) {
+            try {
+
+                externalContext.redirect(externalContext.getRequestContextPath() + "/index.xhtml");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     // Getters y Setters

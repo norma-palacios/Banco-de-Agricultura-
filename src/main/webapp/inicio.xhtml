@@ -1,106 +1,359 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<h:head>
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"> <h:head>
     <title>Banco de agricultura - Mi Panel</title>
+    <f:metadata>
+        <f:viewAction action="#{loginBean.verificarSesion}" />
+    </f:metadata>
     <meta charset="UTF-8" />
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; }
-        .header { background: #006B3F; color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header .user { font-size: 1.1em; }
-        .header .logout-btn { background: #1f4449; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; text-decoration: none; }
-        .container { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        /* --- Estilos Globales --- */
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .wrapper { display: flex; min-height: 100vh; }
         h2 { color: #006B3F; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; }
+        h3 { color: #333; }
 
-        /* Estilos para la tabla de cuentas */
-        .tabla-cuentas { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .tabla-cuentas th, .tabla-cuentas td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        .tabla-cuentas th { background-color: #f9f9f9; }
-        .no-cuentas { color: #777; font-style: italic; }
+        /* --- 1. Encabezado Superior (Header) --- */
+        .header {
+            background: #ffffff;
+            color: #333;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            border-bottom: 1px solid #ddd;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+        .header .logo { font-size: 1.5em; font-weight: bold; color: #006B3F; }
+        .header .user-info { display: flex; align-items: center; }
+        .header .logout-btn { background: #1f4449; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; text-decoration: none; margin-left: 20px; }
 
-        /* Formulario de nueva cuenta */
-        .form-nueva-cuenta { margin-top: 20px; background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .form-group { margin-bottom: 10px; }
-        select, input[type="submit"] { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
-        input[type="submit"] { background-color: #007A45; color: white; cursor: pointer; }
+        /* --- 2. Barra Lateral (Sidebar) --- */
+        .sidebar {
+            width: 220px;
+            background: #ffffff;
+            padding: 20px;
+            padding-top: 80px; /* Espacio para el header fijo */
+            border-right: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+        }
+        .sidebar .nav-menu { list-style: none; padding: 0; margin: 0; }
+        .sidebar .nav-menu li { margin-bottom: 10px; }
+        .sidebar .nav-menu a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .sidebar .nav-menu a:hover { background-color: #f0f2f5; }
+        .sidebar .nav-menu a.active {
+            background-color: #006B3F;
+            color: white;
+        }
+
+        /* --- 3. Contenido Principal (Main Content) --- */
+        .main-content {
+            margin-left: 260px; /* Ancho de sidebar + padding */
+            margin-top: 60px; /* Alto del header */
+            padding: 30px;
+            width: 100%;
+        }
+        .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 20px; }
+
+        /* --- Estilos de Componentes (Tablas, Formularios) --- */
+        .tabla-cuentas, .tabla-movimientos { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .tabla-cuentas th, .tabla-cuentas td, .tabla-movimientos th, .tabla-movimientos td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .tabla-cuentas th, .tabla-movimientos th { background-color: #f9f9f9; }
+        .no-data { color: #777; font-style: italic; }
+
+        .form-nueva-cuenta, .form-transferencia { margin-top: 20px; background: #fdfdfd; padding: 20px; border-radius: 8px; border: 1px solid #eee; }
+        .form-group, .form-group-grid div { margin-bottom: 15px; }
+        .form-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { font-weight: 500; display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="password"], select, .btn-submit {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .btn-submit { background-color: #007A45; color: white; cursor: pointer; border: none; font-size: 15px; }
+
 
         .messages { margin: 15px 0; }
-        .msg-info { color: green; }
-        .msg-warn { color: orange; }
-        .msg-error { color: red; }
+        .msg-info { color: green; font-weight: bold; }
+        .msg-warn { color: orange; font-weight: bold; }
+        .msg-error { color: red; font-weight: bold; }
+        .error-field { color: #D8000C; font-size: 0.85em; display: block; margin-top: 5px; font-weight: bold; }
+
+
+        .resumen-container { display: flex; gap: 30px; }
+        .resumen-card { flex-basis: 300px; }
+        .resumen-card .saldo { font-size: 2.5em; color: #333; font-weight: 600; margin-top: 10px; }
+        .resumen-card .deuda { font-size: 2.5em; color: #D8000C; font-weight: 600; margin-top: 10px; }
+        .monto-retiro { color: #D8000C; }
+        .monto-deposito { color: #007A45; }
+
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+                margin-top: 60px;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+            .header .logo {
+                font-size: 1.2em;
+            }
+            .header .user-info span {
+                display: none;
+            }
+
+            .form-group-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .resumen-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .card {
+                overflow-x: auto;
+            }
+            .tabla-cuentas, .tabla-movimientos {
+                min-width: 600px;
+            }
+        }
+
     </style>
 </h:head>
 
 <h:body>
+
     <div class="header">
-        <div class="user">
-            Bienvenido, <strong>#{loginBean.usuarioLogeado.username}</strong>
+        <div class="logo">Banco Agricultura Salvadoreño</div>
+        <div class="user-info">
+            <span>Bienvenido, <strong>#{loginBean.usuarioLogeado.username}</strong></span>
+            <h:form>
+                <h:commandLink value="Cerrar Sesión" action="#{loginBean.logout}" styleClass="logout-btn" />
+            </h:form>
         </div>
-        <h:form>
-            <h:commandLink value="Cerrar Sesión" action="#{loginBean.logout}" styleClass="logout-btn" />
-        </h:form>
     </div>
 
-    <div class="container">
-        <h:messages globalOnly="false" styleClass="messages"
-                    infoClass="msg-info" warnClass="msg-warn" errorClass="msg-error"/>
+    <div class="wrapper">
 
-        <h2>Mis Cuentas Bancarias</h2>
+        <div class="sidebar">
+            <h:form id="navForm">
+                <ul class="nav-menu">
+                    <li>
+                        <h:commandLink value="Inicio" action="#{cuentasBean.cambiarVista('inicio')}"
+                                       styleClass="#{cuentasBean.vistaActual == 'inicio' ? 'active' : ''}">
+                            <f:ajax execute="@this" render=":panelContenido :navForm" />
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="Mis Cuentas" action="#{cuentasBean.cambiarVista('cuentas')}"
+                                       styleClass="#{cuentasBean.vistaActual == 'cuentas' ? 'active' : ''}">
+                            <f:ajax execute="@this" render=":panelContenido :navForm" />
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="Movimientos" action="#{cuentasBean.cambiarVista('movimientos')}"
+                                       styleClass="#{cuentasBean.vistaActual == 'movimientos' ? 'active' : ''}">
+                            <f:ajax execute="@this" render=":panelContenido :navForm" />
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <h:commandLink value="Transferencias" action="#{cuentasBean.cambiarVista('transferencias')}"
+                                       styleClass="#{cuentasBean.vistaActual == 'transferencias' ? 'active' : ''}">
+                            <f:ajax execute="@this" render=":panelContenido :navForm" />
+                        </h:commandLink>
+                    </li>
+                </ul>
+            </h:form>
+        </div>
 
-        <h:dataTable value="#{cuentasBean.listaCuentas}" var="cuenta"
-                     styleClass="tabla-cuentas" rendered="#{not empty cuentasBean.listaCuentas}">
+        <div class="main-content">
+            <h:panelGroup id="panelContenido" layout="block">
 
-            <h:column>
-                <f:facet name="header">N° de Cuenta</f:facet>
-                #{cuenta.numeroCuenta}
-            </h:column>
+                <h:messages globalOnly="false" styleClass="messages"
+                            infoClass="msg-info" warnClass="msg-warn" errorClass="msg-error"/>
 
-            <h:column>
-                <f:facet name="header">Tipo</f:facet>
-                #{cuenta.tipoCuenta}
-            </h:column>
+                <h:panelGroup rendered="#{cuentasBean.vistaActual == 'inicio'}">
 
-            <h:column>
-                <f:facet name="header">Saldo</f:facet>
-                <h:outputText value="#{cuenta.saldo}">
-                    <f:convertNumber type="currency" currencySymbol="$" />
-                </h:outputText>
-            </h:column>
+                    <div class="card">
+                        <h2>Resumen de Cuentas</h2>
+                        <div class="resumen-container">
+                            <ui:repeat value="#{cuentasBean.listaCuentas}" var="cuenta" varStatus="status" offset="0" size="2">
+                                <div class="resumen-card">
+                                    <strong>#{cuenta.tipoCuenta} #{cuenta.numeroCuenta}</strong>
+                                    <div class="saldo">
+                                        <h:outputText value="#{cuenta.saldo}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
+                                    </div>
+                                    Saldo Actual
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
 
-            <h:column>
-                <f:facet name="header">Estado</f:facet>
-                #{cuenta.estado}
-            </h:column>
+                    <div class="card">
+                        <h2>Movimientos Recientes</h2>
+                        <h:dataTable value="#{cuentasBean.listaMovimientosRecientes}" var="mov"
+                                     styleClass="tabla-movimientos" rendered="#{not empty cuentasBean.listaMovimientosRecientes}">
 
-            <h:column>
-                <f:facet name="header">Fecha de Apertura</f:facet>
-                <h:outputText value="#{cuenta.fechaApertura}">
-                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                </h:outputText>
-            </h:column>
-        </h:dataTable>
+                            <h:column><f:facet name="header">Fecha</f:facet>
+                                <h:outputText value="#{mov.fechaMovimiento}"><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
+                            </h:column>
 
-        <h:outputText value="Aún no tienes cuentas bancarias registradas."
-                      styleClass="no-cuentas"
-                      rendered="#{empty cuentasBean.listaCuentas}"/>
+                            <h:column><f:facet name="header">Descripción</f:facet>
+                                <h:outputText value="#{mov.descripcion}" />
+                            </h:column>
 
-        <h:form styleClass="form-nueva-cuenta" rendered="#{cuentasBean.listaCuentas.size() &lt; 3}">
-            <h3>Crear Nueva Cuenta</h3>
-            <div class="form-group">
-                <h:outputLabel for="tipoCuenta" value="Seleccionar Tipo de Cuenta: " />
-                <h:selectOneMenu id="tipoCuenta" value="#{cuentasBean.tipoCuentaNueva}" required="true">
-                    <f:selectItem itemValue="AHORRO" itemLabel="Cuenta de Ahorro" />
-                    <f:selectItem itemValue="CORRIENTE" itemLabel="Cuenta Corriente" />
-                </h:selectOneMenu>
-            </div>
+                            <h:column><f:facet name="header">Monto</f:facet>
+                                <h:outputText value="#{mov.monto}"
+                                              styleClass="#{mov.cuentaOrigen != null and mov.cuentaOrigen.cliente.idUsuario == loginBean.usuarioLogeado.idUsuario ? 'monto-retiro' : 'monto-deposito'}">
+                                    <f:convertNumber type="currency" currencySymbol="$" />
+                                </h:outputText>
+                            </h:column>
 
-            <h:commandButton value="Crear Cuenta" action="#{cuentasBean.crearCuenta}" />
-        </h:form>
+                        </h:dataTable>
+                        <h:outputText value="No se han encontrado movimientos recientes."
+                                      styleClass="no-data"
+                                      rendered="#{empty cuentasBean.listaMovimientosRecientes}"/>
+                    </div>
+                </h:panelGroup>
 
-        <h:outputText value="Has alcanzado el límite de 3 cuentas."
-                      styleClass="no-cuentas"
-                      rendered="#{cuentasBean.listaCuentas.size() &gt;= 3}"/>
+                <h:panelGroup rendered="#{cuentasBean.vistaActual == 'cuentas'}">
+                    <div class="card">
+                        <h2>Mis Cuentas Bancarias</h2>
+                        <h:dataTable value="#{cuentasBean.listaCuentas}" var="cuenta"
+                                     styleClass="tabla-cuentas" rendered="#{not empty cuentasBean.listaCuentas}">
+                            <h:column><f:facet name="header">N° de Cuenta</f:facet>#{cuenta.numeroCuenta}</h:column>
+                            <h:column><f:facet name="header">Tipo</f:facet>#{cuenta.tipoCuenta}</h:column>
+                            <h:column><f:facet name="header">Saldo</f:facet>
+                                <h:outputText value="#{cuenta.saldo}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
+                            </h:column>
+                            <h:column><f:facet name="header">Estado</f:facet>#{cuenta.estado}</h:column>
+                            <h:column><f:facet name="header">Fecha de Apertura</f:facet>
+                                <h:outputText value="#{cuenta.fechaApertura}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm" /></h:outputText>
+                            </h:column>
+                        </h:dataTable>
+                        <h:outputText value="Aún no tienes cuentas bancarias registradas."
+                                      styleClass="no-data"
+                                      rendered="#{empty cuentasBean.listaCuentas}"/>
+                    </div>
+
+                    <div class="card">
+                        <h:form styleClass="form-nueva-cuenta" rendered="#{cuentasBean.listaCuentas.size() &lt; 3}">
+                            <h3>Crear Nueva Cuenta</h3>
+                            <div class="form-group">
+                                <label for="tipoCuenta">Seleccionar Tipo de Cuenta: </label>
+                                <h:selectOneMenu id="tipoCuenta" value="#{cuentasBean.tipoCuentaNueva}" required="true">
+                                    <f:selectItem itemValue="AHORRO" itemLabel="Cuenta de Ahorro" />
+                                    <f:selectItem itemValue="CORRIENTE" itemLabel="Cuenta Corriente" />
+                                </h:selectOneMenu>
+                            </div>
+                            <h:commandButton value="Crear Cuenta" action="#{cuentasBean.crearCuenta}" styleClass="btn-submit">
+                                <f:ajax execute="@form" render=":panelContenido" />
+                            </h:commandButton>
+                        </h:form>
+                        <h:outputText value="Has alcanzado el límite de 3 cuentas."
+                                      styleClass="no-data"
+                                      rendered="#{cuentasBean.listaCuentas.size() &gt;= 3}"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cuentasBean.vistaActual == 'movimientos'}">
+                    <div class="card">
+                        <h2>Historial de Movimientos</h2>
+                        <h:dataTable value="#{cuentasBean.listaMovimientosRecientes}" var="mov"
+                                     styleClass="tabla-movimientos" rendered="#{not empty cuentasBean.listaMovimientosRecientes}">
+                            <h:column><f:facet name="header">Fecha</f:facet>
+                                <h:outputText value="#{mov.fechaMovimiento}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" /></h:outputText>
+                            </h:column>
+                            <h:column><f:facet name="header">Tipo</f:facet>#{mov.tipoMovimiento.nombre}</h:column>
+                            <h:column><f:facet name="header">Descripción</f:facet>#{mov.descripcion}</h:column>
+                            <h:column><f:facet name="header">Monto</f:facet>
+                                <h:outputText value="#{mov.monto}"
+                                              styleClass="#{mov.cuentaOrigen != null and mov.cuentaOrigen.cliente.idUsuario == loginBean.usuarioLogeado.idUsuario ? 'monto-retiro' : 'monto-deposito'}">
+                                    <f:convertNumber type="currency" currencySymbol="$" />
+                                </h:outputText>
+                            </h:column>
+                        </h:dataTable>
+                        <h:outputText value="No se han encontrado movimientos."
+                                      styleClass="no-data"
+                                      rendered="#{empty cuentasBean.listaMovimientosRecientes}"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cuentasBean.vistaActual == 'transferencias'}">
+                    <div class="card">
+                        <h2>Realizar Transferencia</h2>
+                        <h:form styleClass="form-transferencia">
+                            <div class="form-group-grid">
+                                <div>
+                                    <label for="cuentaOrigen">Desde mi cuenta:</label>
+                                    <h:selectOneMenu id="cuentaOrigen" value="#{cuentasBean.idCuentaOrigen}" required="true" requiredMessage="Debe seleccionar una cuenta de origen.">
+                                        <f:selectItems value="#{cuentasBean.listaCuentas}" var="cuenta"
+                                                       itemValue="#{cuenta.idCuenta}" itemLabel="#{cuenta.numeroCuenta} ($#{cuenta.saldo})" />
+                                    </h:selectOneMenu>
+                                    <h:message for="cuentaOrigen" styleClass="error-field"/>
+                                </div>
+                                <div>
+                                    <label for="cuentaDestino">A la cuenta (N°):</label>
+                                    <h:inputText id="cuentaDestino" value="#{cuentasBean.numeroCuentaDestino}"
+                                                 required="true" requiredMessage="El N° de cuenta destino es obligatorio."
+                                                 validatorMessage="La cuenta debe ser solo números.">
+                                        <f:validateRegex pattern="^[0-9]+$" />
+                                    </h:inputText>
+                                    <h:message for="cuentaDestino" styleClass="error-field"/>
+                                </div>
+                                <div>
+                                    <label for="monto">Monto a transferir:</label>
+                                    <h:inputText id="monto" value="#{cuentasBean.montoTransferencia}"
+                                                 required="true" requiredMessage="El monto es obligatorio.">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                                    </h:inputText>
+                                    <h:message for="monto" styleClass="error-field"/>
+                                </div>
+                                <div>
+                                    <label for="descripcion">Descripción (Opcional):</label>
+                                    <h:inputText id="descripcion" value="#{cuentasBean.descripcionTransferencia}" />
+                                </div>
+                            </div>
+                            <h:commandButton value="Realizar Transferencia" action="#{cuentasBean.realizarTransferencia}" styleClass="btn-submit" style="margin-top: 20px;">
+                                <f:ajax execute="@form" render=":panelContenido" />
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+
+            </h:panelGroup>
+        </div>
     </div>
 </h:body>
 </html>
