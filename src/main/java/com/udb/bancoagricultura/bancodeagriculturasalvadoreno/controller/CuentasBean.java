@@ -1,5 +1,6 @@
 package com.udb.bancoagricultura.bancodeagriculturasalvadoreno.controller;
 
+// ... (Importaciones existentes, incluyendo java.util.ArrayList)
 import com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo.CuentaBancaria;
 import com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo.Movimiento;
 import com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo.TipoMovimiento;
@@ -28,6 +29,7 @@ public class CuentasBean implements Serializable {
     @Inject
     private LoginBean loginBean;
 
+    // Las inicializaciones son correctas
     private List<CuentaBancaria> listaCuentas = new ArrayList<>();
     private String tipoCuentaNueva;
     private int idCuentaOrigen;
@@ -45,7 +47,7 @@ public class CuentasBean implements Serializable {
 
     public void cargarCuentas() {
         if (loginBean.getUsuarioLogeado() == null) {
-            listaCuentas = new ArrayList<>(); // Asegurar que no sea null
+            listaCuentas = new ArrayList<>();
             return;
         }
         EntityManager em = JPAUtil.getEntityManager();
@@ -58,20 +60,21 @@ public class CuentasBean implements Serializable {
             this.listaCuentas = query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
-
-            this.listaCuentas = new ArrayList<>(); //
+            this.listaCuentas = new ArrayList<>();
         } finally {
             em.close();
         }
     }
 
+    // --- MÉTODO CORREGIDO ---
     public void cargarMovimientosRecientes() {
         if (loginBean.getUsuarioLogeado() == null) {
-            listaMovimientosRecientes = new ArrayList<>(); // Asegurar que no sea null
+            listaMovimientosRecientes = new ArrayList<>();
             return;
         }
         EntityManager em = JPAUtil.getEntityManager();
         try {
+            // Paso 1: Obtener los IDs de las cuentas del usuario
             TypedQuery<Integer> idQuery = em.createQuery(
                     "SELECT c.idCuenta FROM CuentaBancaria c WHERE c.cliente.idUsuario = :idUsuario", Integer.class);
             idQuery.setParameter("idUsuario", loginBean.getUsuarioLogeado().getIdUsuario());
@@ -82,9 +85,11 @@ public class CuentasBean implements Serializable {
                 return;
             }
 
+            // --- 2. CONSULTA CORREGIDA (AHORA ES SEGURA) ---
             TypedQuery<Movimiento> query = em.createQuery(
                     "SELECT m FROM Movimiento m " +
-                            "WHERE m.cuentaOrigen.idCuenta IN :listaIds OR m.cuentaDestino.idCuenta IN :listaIds " +
+                            "WHERE (m.cuentaOrigen IS NOT NULL AND m.cuentaOrigen.idCuenta IN :listaIds) " + // Comprueba IS NOT NULL
+                            "OR (m.cuentaDestino IS NOT NULL AND m.cuentaDestino.idCuenta IN :listaIds) " + // Comprueba IS NOT NULL
                             "ORDER BY m.fechaMovimiento DESC",
                     Movimiento.class
             );
@@ -94,12 +99,12 @@ public class CuentasBean implements Serializable {
 
         } catch (Exception e) {
             e.printStackTrace();
-            
-            this.listaMovimientosRecientes = new ArrayList<>(); // ¡En lugar de .clear()!
+            this.listaMovimientosRecientes = new ArrayList<>();
         } finally {
             em.close();
         }
     }
+
 
     public void cambiarVista(String nuevaVista) {
         this.vistaActual = nuevaVista;
@@ -115,13 +120,15 @@ public class CuentasBean implements Serializable {
         }
     }
 
+    // --- MÉTODO CORREGIDO ---
     public void cargarTodosMovimientos() {
         if (loginBean.getUsuarioLogeado() == null) {
-            listaMovimientosRecientes = new ArrayList<>(); // Asegurar que no sea null
+            listaMovimientosRecientes = new ArrayList<>();
             return;
         }
         EntityManager em = JPAUtil.getEntityManager();
         try {
+            // Paso 1: Obtener los IDs
             TypedQuery<Integer> idQuery = em.createQuery(
                     "SELECT c.idCuenta FROM CuentaBancaria c WHERE c.cliente.idUsuario = :idUsuario", Integer.class);
             idQuery.setParameter("idUsuario", loginBean.getUsuarioLogeado().getIdUsuario());
@@ -132,25 +139,29 @@ public class CuentasBean implements Serializable {
                 return;
             }
 
+            // --- 2. CONSULTA CORREGIDA (AHORA ES SEGURA) ---
             TypedQuery<Movimiento> query = em.createQuery(
                     "SELECT m FROM Movimiento m " +
-                            "WHERE m.cuentaOrigen.idCuenta IN :listaIds OR m.cuentaDestino.idCuenta IN :listaIds " +
+                            "WHERE (m.cuentaOrigen IS NOT NULL AND m.cuentaOrigen.idCuenta IN :listaIds) " + // Comprueba IS NOT NULL
+                            "OR (m.cuentaDestino IS NOT NULL AND m.cuentaDestino.idCuenta IN :listaIds) " + // Comprueba IS NOT NULL
                             "ORDER BY m.fechaMovimiento DESC",
                     Movimiento.class
             );
             query.setParameter("listaIds", idsDeMisCuentas);
+            // Sin MaxResults
             this.listaMovimientosRecientes = query.getResultList();
 
         } catch (Exception e) {
             e.printStackTrace();
-            // --- 3. CAMBIO AQUÍ ---
-            this.listaMovimientosRecientes = new ArrayList<>(); //
+            this.listaMovimientosRecientes = new ArrayList<>();
         } finally {
             em.close();
         }
     }
 
+    // ... (El resto de tus métodos: crearCuenta, realizarTransferencia, y Getters/Setters no cambian) ...
 
+    // ... (crearCuenta) ...
     public String crearCuenta() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (listaCuentas.size() >= 3) {
@@ -184,6 +195,7 @@ public class CuentasBean implements Serializable {
         return null;
     }
 
+    // ... (realizarTransferencia) ...
     public String realizarTransferencia() {
         FacesContext context = FacesContext.getCurrentInstance();
         EntityManager em = JPAUtil.getEntityManager();
@@ -259,7 +271,7 @@ public class CuentasBean implements Serializable {
         return null;
     }
 
-    // --- Getters y Setters ---
+    // ... (Getters y Setters) ...
     public List<CuentaBancaria> getListaCuentas() {
         return listaCuentas;
     }
