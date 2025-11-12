@@ -1,18 +1,229 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<h:head>
-    <title>Banco de agricultura  - inicio</title>
-    <f:metadata>
-        <f:viewAction action="#{loginBean.verificarSesion}" />
-    </f:metadata>
-    <meta charset="UTF-8" />
-    <style>
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
 
-    </style>
-</h:head>
+<ui:composition template="/template/template.xhtml">
 
-<h:body>
-</h:body>
+    <ui:define name="titulo">Panel de Gerente de sucursal</ui:define>
+
+    <ui:define name="acciones">
+        <ul class="nav-menu">
+            <li>
+                <h:commandLink value="Ingreso de empleados"
+                               action="#{gerenteSucursalBean.cambiarVista('ingresoEmpleados')}"
+                               styleClass="#{gerenteSucursalBean.vistaActual == 'ingresoEmpleados' ? 'active' : ''}">
+                    <f:ajax execute="@this" render=":panelContenido :navForm"/>
+                </h:commandLink>
+            </li>
+            <li>
+                <h:commandLink value="Listado de empleados"
+                               action="#{gerenteSucursalBean.cambiarVista('listadoEmpleados')}"
+                               styleClass="#{gerenteSucursalBean.vistaActual == 'listadoEmpleados' ? 'active' : ''}">
+                    <f:ajax execute="@this" render=":panelContenido :navForm"/>
+                </h:commandLink>
+            </li>
+            <li>
+                <h:commandLink value="Casos de prestamos" action="#{gerenteSucursalBean.cambiarVista('casosPrestamos')}"
+                               styleClass="#{gerenteSucursalBean.vistaActual == 'casosPrestamos' ? 'active' : ''}">
+                    <f:ajax execute="@this" render=":panelContenido :navForm"/>
+                </h:commandLink>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="contenido">
+        <h:panelGroup id="panelContenido" layout="block">
+
+            <h:messages globalOnly="false" styleClass="messages"
+                        infoClass="msg-info" errorClass="msg-error"/>
+
+            <h:panelGroup rendered="#{gerenteSucursalBean.vistaActual == 'ingresoEmpleados'}">
+                <!-- Pegar formulario de registrar empleado-->
+                <div class="container mt-4 mb-5">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-header bg-success text-white text-center py-3">
+                            <h4 class="mb-0">Registrar Nuevo Empleado</h4>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <h:form id="formEmpleado">
+
+                                <!-- ==========================
+                                     DATOS PERSONALES
+                                =========================== -->
+                                <h5 class="text-primary fw-bold mb-3">
+                                    <i class="bi bi-person-fill"></i> Datos Personales
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">DUI</label>
+                                        <h:inputText value="#{gerenteSucursalBean.dui}"
+                                                     styleClass="form-control"
+                                                     required="true"
+                                                     maxlength="10"/>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Nombres</label>
+                                        <h:inputText value="#{gerenteSucursalBean.nombres}"
+                                                     styleClass="form-control"
+                                                     required="true"/>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Apellidos</label>
+                                        <h:inputText value="#{gerenteSucursalBean.apellidos}"
+                                                     styleClass="form-control"
+                                                     required="true"/>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Fecha de Nacimiento</label>
+                                        <h:inputText value="#{gerenteSucursalBean.fechaNacimiento}"
+                                                     styleClass="form-control"
+                                                     required="true"
+                                                     id="fechaNacimiento">
+                                            <f:passThroughAttribute name="type" value="date"/>
+                                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                        </h:inputText>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Teléfono</label>
+                                        <h:inputText value="#{gerenteSucursalBean.telefono}"
+                                                     styleClass="form-control"
+                                                     maxlength="9"
+                                                     placeholder="0000-0000"/>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Correo Electrónico</label>
+                                        <h:inputText value="#{gerenteSucursalBean.email}"
+                                                     styleClass="form-control"
+                                                     placeholder="ejemplo@correo.com"/>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label">Dirección</label>
+                                        <h:inputTextarea value="#{gerenteSucursalBean.direccion}"
+                                                         styleClass="form-control"
+                                                         rows="2"/>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4"/>
+
+                                <!-- ==========================
+                                     DATOS DEL EMPLEADO
+                                =========================== -->
+                                <h5 class="text-primary fw-bold mb-3">
+                                    <i class="bi bi-briefcase-fill"></i> Datos del Empleado
+                                </h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Cargo</label>
+                                        <h:selectOneMenu value="#{gerenteSucursalBean.cargo}"
+                                                         styleClass="form-select" required="true">
+                                            <f:selectItem itemValue="" itemLabel="Seleccione un cargo" noSelectionOption="true"/>
+                                            <f:selectItem itemValue="CAJERO" itemLabel="Cajero"/>
+                                            <f:selectItem itemValue="ASESOR_FINANCIERO" itemLabel="Asesor Financiero"/>
+                                            <f:selectItem itemValue="RECEPCIONISTA" itemLabel="Recepcionista"/>
+                                            <f:selectItem itemValue="LIMPIEZA" itemLabel="Limpieza"/>
+                                        </h:selectOneMenu>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Salario ($)</label>
+                                        <h:inputText value="#{gerenteSucursalBean.salario}"
+                                                     styleClass="form-control"
+                                                     required="true">
+                                            <f:convertNumber type="number" maxFractionDigits="2"/>
+                                        </h:inputText>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label">Motivo de Contratación</label>
+                                        <h:inputTextarea value="#{gerenteSucursalBean.motivo}"
+                                                         styleClass="form-control"
+                                                         rows="3"/>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4"/>
+
+                                <!-- ==========================
+                                     BOTÓN Y MENSAJES
+                                =========================== -->
+                                <div class="text-center">
+                                    <h:commandButton value="Registrar Empleado"
+                                                     action="#{gerenteSucursalBean.registrarPersonaYEmpleado()}"
+                                                     styleClass="btn btn-success px-4 py-2 fw-bold shadow-sm"/>
+                                </div>
+
+                                <div class="mt-4 text-center">
+                                    <h:messages globalOnly="true" styleClass="text-danger fw-bold"/>
+                                    <h:outputText value="#{gerenteSucursalBean.mensaje}"
+                                                  style="color:blue; font-weight:bold; display:block;"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+            <h:panelGroup rendered="#{gerenteSucursalBean.vistaActual == 'listadoEmpleados'}">
+                <h:form styleClass="container mt-4">
+
+                    <h3 class="text-success mb-3">Empleados Activos</h3>
+
+                    <h:dataTable value="#{gerenteSucursalBean.empleadosActivos}" var="emp"
+                                 styleClass="table table-striped table-hover border rounded shadow-sm">
+
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            #{emp.idEmpleado}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Nombre</f:facet>
+                            #{emp.persona.nombres} #{emp.persona.apellidos}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Cargo</f:facet>
+                            #{emp.cargo}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Estado</f:facet>
+                            <span class="badge bg-success">#{emp.estado}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Acción</f:facet>
+                            <h:commandButton value="Desactivar"
+                                             action="#{gerenteSucursalBean.desactivarEmpleado(emp)}"
+                                             styleClass="btn btn-danger btn-sm fw-bold"
+                                             onclick="return confirm('¿Seguro que deseas desactivar este empleado?');"/>
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:messages globalOnly="true" styleClass="text-primary mt-3" />
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{gerenteSucursalBean.vistaActual == 'casosPrestamos'}">
+                <h2>Gestion de prestamos </h2>
+                <p>Esta sección está en construcción.</p>
+            </h:panelGroup>
+
+        </h:panelGroup>
+    </ui:define>
+
+</ui:composition>
 </html>

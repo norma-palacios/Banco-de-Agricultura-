@@ -1,0 +1,198 @@
+/* ... (Todos tus estilos CSS existentes van aquí) ... */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+h2 {
+    color: #006B3F;
+    border-bottom: 2px solid #f4f4f4;
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: #333;
+}
+
+.header {
+    background: #ffffff;
+    color: #333;
+    padding: 10px 30px; /* más espacio vertical */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px; /* ✅ usa min-height, no height */
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    box-sizing: border-box; /* asegura que padding no sume tamaño */
+}
+
+.header .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #006B3F;
+}
+
+.header .user-info {
+    display: flex;
+    align-items: center;
+}
+
+.header .logout-btn {
+    background: #1f4449;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.sidebar {
+    width: 220px;
+    background: #ffffff;
+    padding: 20px;
+    padding-top: 80px;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.sidebar .nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar .nav-menu li {
+    margin-bottom: 10px;
+}
+
+.sidebar .nav-menu a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.sidebar .nav-menu a:hover {
+    background-color: #f0f2f5;
+}
+
+.sidebar .nav-menu a.active {
+    background-color: #006B3F;
+    color: white;
+}
+
+.main-content {
+    margin-left: 260px;
+    margin-top: 60px;
+    padding: 30px;
+    width: 100%;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.tabla-sucursales {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tabla-sucursales th, .tabla-sucursales td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.tabla-sucursales th {
+    background-color: #f9f9f9;
+}
+
+.form-nueva-sucursal {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="password"], input[type="date"], select, .btn-submit {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.btn-submit {
+    background-color: #007A45;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-size: 15px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.msg-info {
+    color: green;
+    font-weight: bold;
+}
+
+.msg-error {
+    color: red;
+    font-weight: bold;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.error-field {
+    color: #D8000C;
+    font-size: 0.85em;
+    display: block;
+    margin-top: 4px;
+}
