@@ -34,6 +34,9 @@ public class Persona {
     @Column(name = "direccion", length = 200)
     private String direccion;
 
+    @Column(name = "fecha_registro")
+    private Date fechaRegistro;
+
     // --- Getters y Setters ---
 
     public int getIdPersona() { return idPersona; }
@@ -59,4 +62,12 @@ public class Persona {
 
     public String getDireccion() { return direccion; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
 }

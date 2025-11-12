@@ -39,7 +39,6 @@ public class LoginBean implements Serializable {
                 case "GERENTE_GENERAL":
                     return "iniciogerentegeneral.xhtml?faces-redirect=true";
                 default:
-
                     return "index.xhtml?error=rol_invalido";
             }
 
@@ -76,7 +75,7 @@ public class LoginBean implements Serializable {
         if (this.usuarioLogeado == null) {
             try {
 
-                externalContext.redirect(externalContext.getRequestContextPath() + "/index.xhtml");
+                externalContext.redirect(externalContext.getRequestContextPath() + "/index.xhtml?faces-redirect=true");
             } catch (IOException e) {
                 e.printStackTrace();
             }
