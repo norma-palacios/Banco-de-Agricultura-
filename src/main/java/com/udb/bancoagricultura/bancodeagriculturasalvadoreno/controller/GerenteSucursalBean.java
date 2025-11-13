@@ -41,7 +41,7 @@ public class GerenteSucursalBean implements Serializable {
 
     private String mensaje;
     private List<Empleado> empleadosActivos;
-
+    private List<Prestamo> prestamosPendientes;
 
     public void cambiarVista(String nuevaVista) {
         this.vistaActual = nuevaVista;
@@ -218,6 +218,79 @@ public class GerenteSucursalBean implements Serializable {
     public String getVistaActual() { return vistaActual; }
     public void setVistaActual(String vistaActual) { this.vistaActual = vistaActual; }
 
+    public List<Prestamo> getPrestamosPendientes() {
+        if (prestamosPendientes == null) {
+            cargarPrestamosPendientes();
+        }
+        return prestamosPendientes;
+    }
+
+    public void cargarPrestamosPendientes() {
+        EntityManager em = null;
+        try {
+            em = JPAUtil.getEntityManager();
+            prestamosPendientes = em.createQuery(
+                    "SELECT p FROM Prestamo p", Prestamo.class
+            ).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            prestamosPendientes = new ArrayList<>();
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void aprobarPrestamo(Prestamo prestamoSeleccionado) {
+        EntityManager em = null;
+        EntityTransaction tx = null;
+
+        try {
+            em = JPAUtil.getEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
+
+            Prestamo prestamo = em.find(Prestamo.class, prestamoSeleccionado.getIdPrestamo());
+            prestamo.setEstado("APROBADO");
+            em.merge(prestamo);
+
+            tx.commit();
+
+            mensaje = "✅ Préstamo #" + prestamo.getIdPrestamo() + " aprobado correctamente.";
+            cargarPrestamosPendientes(); // refrescar lista
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            e.printStackTrace();
+            mensaje = "❌ Error al aprobar préstamo: " + e.getMessage();
+        } finally {
+            if (em != null) em.close();
+        }
+    }
+
+    public void rechazarPrestamo(Prestamo prestamoSeleccionado) {
+        EntityManager em = null;
+        EntityTransaction tx = null;
+
+        try {
+            em = JPAUtil.getEntityManager();
+            tx = em.getTransaction();
+            tx.begin();
+
+            Prestamo prestamo = em.find(Prestamo.class, prestamoSeleccionado.getIdPrestamo());
+            prestamo.setEstado("RECHAZADO");
+            em.merge(prestamo);
+
+            tx.commit();
+
+            mensaje = "⚠️ Préstamo #" + prestamo.getIdPrestamo() + " fue rechazado.";
+            cargarPrestamosPendientes();
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            e.printStackTrace();
+            mensaje = "❌ Error al rechazar préstamo: " + e.getMessage();
+        } finally {
+            if (em != null) em.close();
+        }
+    }
     // setter y getters
 
     private void limpiarCampos() {
