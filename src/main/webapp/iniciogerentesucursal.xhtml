@@ -218,8 +218,59 @@
             </h:panelGroup>
 
             <h:panelGroup rendered="#{gerenteSucursalBean.vistaActual == 'casosPrestamos'}">
-                <h2>Gestion de prestamos </h2>
-                <p>Esta sección está en construcción.</p>
+                <h:form styleClass="container mt-4">
+
+                    <h3 class="text-success mb-3">Préstamos Pendientes de Aprobación</h3>
+
+                    <h:dataTable value="#{gerenteSucursalBean.prestamosPendientes}" var="p"
+                                 styleClass="table table-striped table-hover border rounded shadow-sm">
+
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            #{p.idPrestamo}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Monto</f:facet>
+                            $#{p.monto}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Plazo</f:facet>
+                            #{p.plazoMeses} meses
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Interés</f:facet>
+                            #{p.tasaInteres}%
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Estado</f:facet>
+                            <span class="badge bg-warning text-dark">#{p.estado}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Acciones</f:facet>
+
+                            <h:commandButton value="Aprobar"
+                                             action="#{gerenteSucursalBean.aprobarPrestamo(p)}"
+                                             styleClass="btn btn-success btn-sm fw-bold me-2"
+                                             onclick="return confirm('¿Aprobar este préstamo?');"
+                                             rendered="#{p.estado =='ESPERA'}"
+                            />
+
+                            <h:commandButton value="Rechazar"
+                                             action="#{gerenteSucursalBean.rechazarPrestamo(p)}"
+                                             styleClass="btn btn-danger btn-sm fw-bold"
+                                             onclick="return confirm('¿Rechazar este préstamo?');"
+                                             rendered="#{p.estado =='ESPERA'}"
+                            />
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:messages globalOnly="true" styleClass="text-primary mt-3" />
+                </h:form>
             </h:panelGroup>
 
         </h:panelGroup>
