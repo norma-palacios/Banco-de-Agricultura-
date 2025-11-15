@@ -192,7 +192,7 @@ public class GerenteSucursalBean implements Serializable {
             AccionPersonal accion = new AccionPersonal();
             accion.setEmpleado(empleado);
             accion.setIdGerenteSucursal(idGerente);
-            accion.setTipoAccion("DESACTIVACIÓN");
+            accion.setTipoAccion("BAJA");
             accion.setMotivo("Desactivado por el Gerente de Sucursal");
             accion.setFechaCreacion(new java.util.Date());
             accion.setEstado("PENDIENTE");
