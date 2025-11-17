@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Panel de Dependiente</title>
+    <f:metadata>
+        <f:viewAction action="#{loginBean.verificarSesion}"/>
+    </f:metadata>
+    <meta charset="UTF-8"/>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+        .header { background: #006B3F; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .container { max-width: 900px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        .form-group .input-dui { width: 300px; }
+        .input-text { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-primary { background-color: #006B3F; }
+        .btn-primary:hover { background-color: #005230; }
+        .btn-success { background-color: #28a745; margin-right: 10px; }
+        .btn-danger { background-color: #dc3545; }
+        .panel-cliente { border: 1px solid #e0e0e0; border-radius: 8px; margin-top: 25px; }
+        .panel-header { background: #f9f9f9; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; }
+        .panel-header h3 { margin: 0; color: #006B3F; }
+        .panel-body { padding: 20px; }
+        .mensaje { padding: 15px; border-radius: 5px; margin: 15px 0; font-weight: bold; }
+        .mensaje-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .mensaje-info { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .cuentas-tabla { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .cuentas-tabla th, .cuentas-tabla td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        .cuentas-tabla th { background: #f4f4f4; }
+        .transaccion-form { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: end; }
+        .error-field { color: #dc3545; font-size: 0.9em; margin-top: 5px; }
+        .logout-btn { background: #c82333; color: white; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; }
+    </style>
+</h:head>
+
+<h:body>
+
+    <div class="header">
+        <h1>Panel de Dependiente</h1>
+        <h:form>
+            <h:commandLink value="Cerrar Sesión" action="#{loginBean.logout}" styleClass="logout-btn" />
+        </h:form>
+    </div>
+
+    <div class="container">
+
+        <h:form id="formBusqueda">
+            <h2>Buscar Cliente</h2>
+            <div class="form-group">
+                <h:outputLabel for="dui" value="Ingresar DUI del Cliente:"/>
+                <h:inputText id="dui" value="#{dependienteBean.duiBusqueda}"
+                             required="true" requiredMessage="El DUI es obligatorio."
+                             styleClass="input-text input-dui" />
+                <h:message for="dui" styleClass="error-field"/>
+            </div>
+
+            <h:commandButton value="Buscar Cliente" action="#{dependienteBean.buscarCliente}"
+                             styleClass="btn btn-primary">
+                <f:ajax execute="@form" render=":panelCliente :mensajesGlobales"/>
+            </h:commandButton>
+        </h:form>
+
+        <h:messages id="mensajesGlobales" globalOnly="true"
+                    infoClass="mensaje mensaje-info" errorClass="mensaje mensaje-error" />
+
+        <h:panelGroup id="panelCliente">
+
+            <h:outputText value="#{dependienteBean.mensajeBusqueda}"
+                          styleClass="mensaje mensaje-error"
+                          rendered="#{not empty dependienteBean.mensajeBusqueda and dependienteBean.clienteEncontrado == null}"/>
+
+            <h:panelGroup rendered="#{dependienteBean.clienteEncontrado != null}">
+                <div class="panel-cliente">
+                    <div class="panel-header">
+                        <h3>Cliente: #{dependienteBean.clienteEncontrado.nombres} #{dependienteBean.clienteEncontrado.apellidos}</h3>
+                    </div>
+
+                    <div class="panel-body">
+                        <h4>Cuentas Bancarias Activas</h4>
+
+                        <h:outputText value="El cliente no posee cuentas activas."
+                                      rendered="#{empty dependienteBean.cuentasCliente}"/>
+
+                        <h:panelGroup rendered="#{not empty dependienteBean.cuentasCliente}">
+
+                            <h:form id="formTransaccion">
+                                <h:dataTable value="#{dependienteBean.cuentasCliente}" var="cuenta" styleClass="cuentas-tabla">
+                                    <h:column>
+                                        <f:facet name="header">Nº de Cuenta</f:facet>
+                                        #{cuenta.numeroCuenta}
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">Tipo</f:facet>
+                                        #{cuenta.tipoCuenta}
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">Saldo Actual</f:facet>
+                                        <h:outputText value="#{cuenta.saldo}">
+                                            <f:convertNumber type="currency" currencySymbol="$"/>
+                                        </h:outputText>
+                                    </h:column>
+                                </h:dataTable>
+
+                                <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;"/>
+
+                                <h4>Realizar Transacción</h4>
+                                <p>La comisión por cualquier transacción es del 5%.</p>
+
+                                <div class="transaccion-form">
+                                    <div class="form-group">
+                                        <h:outputLabel for="cuenta" value="Seleccionar Cuenta:"/>
+                                        <h:selectOneMenu id="cuenta" value="#{dependienteBean.idCuentaSeleccionada}"
+                                                         required="true" requiredMessage="Debe seleccionar una cuenta."
+                                                         styleClass="input-text">
+                                            <f:selectItem itemLabel="-- Elija una cuenta --" itemValue=""/>
+                                            <f:selectItems value="#{dependienteBean.cuentasCliente}"
+                                                           var="c"
+                                                           itemLabel="#{c.numeroCuenta} (#{c.tipoCuenta})"
+                                                           itemValue="#{c.idCuenta}"/>
+                                        </h:selectOneMenu>
+                                        <h:message for="cuenta" styleClass="error-field"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <h:outputLabel for="monto" value="Monto de la Transacción:"/>
+                                        <h:inputText id="monto" value="#{dependienteBean.montoTransaccion}"
+                                                     required="true" requiredMessage="El monto es obligatorio."
+                                                     styleClass="input-text">
+                                            <f:validateDoubleRange minimum="0.01"/>
+                                        </h:inputText>
+                                        <h:message for="monto" styleClass="error-field"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <h:commandButton value="Realizar Depósito (Abono)"
+                                                     action="#{dependienteBean.realizarDeposito}"
+                                                     styleClass="btn btn-success">
+                                        <f:ajax execute="@form" render=":panelCliente :mensajesGlobales"/>
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Realizar Retiro"
+                                                     action="#{dependienteBean.realizarRetiro}"
+                                                     styleClass="btn btn-danger">
+                                        <f:ajax execute="@form" render=":panelCliente :mensajesGlobales"/>
+                                    </h:commandButton>
+                                </div>
+
+                            </h:form>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+    </div>
+</h:body>
+</html>
