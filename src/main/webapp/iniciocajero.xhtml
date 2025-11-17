@@ -3,16 +3,92 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>Banco de agricultura  - inicio</title>
-    <f:metadata>
-        <f:viewAction action="#{loginBean.verificarSesion}" />
-    </f:metadata>
+    <title>Panel del Cajero</title>
     <meta charset="UTF-8" />
-    <style>
-
-    </style>
 </h:head>
 
 <h:body>
+<h:form id="frmCajero">
+
+    <h2>Registrar Movimiento</h2>
+
+    <!-- ID Cuenta -->
+    <h:panelGrid columns="2" columnClasses="lbl,val" style="margin-bottom:10px">
+        <h:outputLabel for="txtCuenta" value="ID Cuenta:" />
+        <h:inputText id="txtCuenta"
+                     value="#{movimientosBean.idCuentaParam}"
+                     maxlength="10" style="width:220px"/>
+    </h:panelGrid>
+
+    <!-- Monto -->
+    <h:panelGrid columns="2" columnClasses="lbl,val" style="margin-bottom:10px">
+        <h:outputLabel for="txtMonto" value="Monto:" />
+        <h:inputText id="txtMonto"
+                     value="#{movimientosBean.monto}"
+                     style="width:220px">
+            <f:convertNumber type="number"/>
+        </h:inputText>
+    </h:panelGrid>
+
+    <!-- Acciones -->
+    <h:panelGroup style="margin-bottom:16px; display:block">
+        <h:commandButton value="Buscar movimientos"
+                         action="#{movimientosBean.cargarMovimientos}">
+            <f:ajax render="tblMov mensajes"/>
+        </h:commandButton>
+
+        <h:commandButton value="Registrar depósito"
+                         action="#{movimientosBean.registrarDeposito}"
+                         style="margin-left:8px">
+            <f:ajax render="tblMov mensajes"/>
+        </h:commandButton>
+
+        <h:commandButton value="Registrar retiro"
+                         action="#{movimientosBean.registrarRetiro}"
+                         style="margin-left:8px">
+            <f:ajax render="tblMov mensajes"/>
+        </h:commandButton>
+    </h:panelGroup>
+
+    <!-- Mensajes -->
+    <h:messages id="mensajes" globalOnly="true" showSummary="true" showDetail="false" />
+
+    <!-- Historial -->
+    <h2>Historial de Movimientos</h2>
+    <h:dataTable id="tblMov"
+                 value="#{movimientosBean.listaMovimientos}"
+                 var="mov"
+                 rendered="#{not empty movimientosBean.listaMovimientos}"
+                 border="1" cellpadding="5">
+
+        <h:column>
+            <f:facet name="header">ID</f:facet>
+            #{mov.idMovimiento}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Tipo</f:facet>
+            #{mov.tipoMovimiento != null ? mov.tipoMovimiento.nombre : ''}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Monto</f:facet>
+            #{mov.monto}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Fecha</f:facet>
+            <h:outputText value="#{mov.fechaMovimiento}">
+                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+            </h:outputText>
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Cuenta</f:facet>
+            #{mov.cuentaOrigen != null ? mov.cuentaOrigen.idCuenta : ''}
+        </h:column>
+    </h:dataTable>
+
+</h:form>
 </h:body>
 </html>
