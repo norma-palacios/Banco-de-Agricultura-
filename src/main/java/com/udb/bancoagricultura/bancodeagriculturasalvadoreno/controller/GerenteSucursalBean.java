@@ -104,7 +104,7 @@ public class GerenteSucursalBean implements Serializable {
             acc.setIdGerenteSucursal(idGerente);
             acc.setTipoAccion("CONTRATACION");
             acc.setMotivo(motivo);
-            acc.setFechaCreacion(new java.util.Date());
+            acc.setFechaSolicitud(new java.util.Date());
             acc.setEstado("PENDIENTE");
             em.persist(acc);
 
@@ -194,7 +194,7 @@ public class GerenteSucursalBean implements Serializable {
             accion.setIdGerenteSucursal(idGerente);
             accion.setTipoAccion("BAJA");
             accion.setMotivo("Desactivado por el Gerente de Sucursal");
-            accion.setFechaCreacion(new java.util.Date());
+            accion.setFechaSolicitud(new java.util.Date());
             accion.setEstado("PENDIENTE");
             em.persist(accion);
 
