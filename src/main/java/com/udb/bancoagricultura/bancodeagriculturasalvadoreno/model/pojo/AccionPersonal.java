@@ -1,40 +1,51 @@
 package com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "acciones_personal", schema = "banco_agricultura")
-public class AccionPersonal {
+public class AccionPersonal implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_accion")
-    private Integer idAccion;
+    private int idAccion;
 
-    @ManyToOne
-    @JoinColumn(name = "id_empleado")
+    // Relación: La acción es SOBRE un empleado
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_empleado", nullable = false)
     private Empleado empleado;
 
-    @Column(name = "id_gerente_sucursal")
-    private Integer idGerenteSucursal;
+    // Guardamos solo el ID del gerente, como está en tu BD
+    @Column(name = "id_gerente_sucursal", nullable = false)
+    private int idGerenteSucursal;
+
+    @Column(name = "tipo_accion", nullable = false)
+    private String tipoAccion; // CONTRATACION, BAJA
+
+    @Column(name = "motivo")
     private String motivo;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_solicitud")
-    private Date fechaCreacion;
+    private Date fechaSolicitud; // Nombre de columna en BD
 
-    private String estado;
+    @Column(name = "estado")
+    private String estado; // PENDIENTE, APROBADA, RECHAZADA
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_resolucion")
-    private String fechaResolucion;
+    private Date fechaResolucion; // Nombre de columna en BD
 
-    @Column(name = "tipo_accion")
-    private String tipoAccion;
+    // --- Getters y Setters ---
 
-    public Integer getIdAccion() {
+    public int getIdAccion() {
         return idAccion;
     }
 
-    public void setIdAccion(Integer idAccion) {
+    public void setIdAccion(int idAccion) {
         this.idAccion = idAccion;
     }
 
@@ -46,12 +57,20 @@ public class AccionPersonal {
         this.empleado = empleado;
     }
 
-    public Integer getIdGerenteSucursal() {
+    public int getIdGerenteSucursal() {
         return idGerenteSucursal;
     }
 
-    public void setIdGerenteSucursal(Integer idGerenteSucursal) {
+    public void setIdGerenteSucursal(int idGerenteSucursal) {
         this.idGerenteSucursal = idGerenteSucursal;
+    }
+
+    public String getTipoAccion() {
+        return tipoAccion;
+    }
+
+    public void setTipoAccion(String tipoAccion) {
+        this.tipoAccion = tipoAccion;
     }
 
     public String getMotivo() {
@@ -62,12 +81,12 @@ public class AccionPersonal {
         this.motivo = motivo;
     }
 
-    public Date getFechaCreacion() {
-        return fechaCreacion;
+    public Date getFechaSolicitud() {
+        return fechaSolicitud;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setFechaSolicitud(Date fechaSolicitud) {
+        this.fechaSolicitud = fechaSolicitud;
     }
 
     public String getEstado() {
@@ -78,19 +97,11 @@ public class AccionPersonal {
         this.estado = estado;
     }
 
-    public String getFechaResolucion() {
+    public Date getFechaResolucion() {
         return fechaResolucion;
     }
 
-    public void setFechaResolucion(String fechaResolucion) {
+    public void setFechaResolucion(Date fechaResolucion) {
         this.fechaResolucion = fechaResolucion;
-    }
-
-    public String getTipoAccion() {
-        return tipoAccion;
-    }
-
-    public void setTipoAccion(String tipoAccion) {
-        this.tipoAccion = tipoAccion;
     }
 }

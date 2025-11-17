@@ -1,92 +1,79 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.udb.bancoagricultura.bancodeagriculturasalvadoreno.model.pojo;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ *
+ * @author felix
+ */
 @Entity
-@Table(name = "prestamos")
-public class Prestamo {
+@Table(name = "prestamos", schema = "banco_agricultura")
+public class Prestamo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_prestamo")
-    private Integer idPrestamo;
+    private int idPrestamo;
 
     @ManyToOne
-    @JoinColumn(name = "id_empleado")
-    private Empleado empleado; // el cajero que lo creó o el cliente vinculado
+    @JoinColumn(name = "id_cuenta", nullable = false)
+    private CuentaBancaria cuenta;
 
-    @Column(name = "monto")
-    private Double monto;
+    @ManyToOne
+    @JoinColumn(name = "id_empleado", nullable = false)
+    private Empleado empleado;
 
-    @Column(name = "plazo_meses")
-    private Integer plazoMeses;
+    @Column(name = "monto", nullable = false)
+    private BigDecimal monto;
 
-    @Column(name = "tasa_interes")
-    private Double tasaInteres;
+    @Column(name = "interes", nullable = false)
+    private BigDecimal interes;
 
-    @Column(name = "estado")
-    private String estado; // PENDIENTE_APROBACION, APROBADO, RECHAZADO
+    @Column(name = "plazo_anios", nullable = false)
+    private int plazoAnios;
 
-    @Column(name = "fecha_solicitud")
+    @Column(name = "cuota_mensual", nullable = false)
+    private BigDecimal cuotaMensual;
+
+    @Column(name = "estado", length = 20, nullable = false)
+    private String estado;
+
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaSolicitud;
+    @Column(name = "fecha_apertura")
+    private Date fechaApertura;
 
-    // getters y setters...
+    // Getters y Setters
+    public int getIdPrestamo() { return idPrestamo; }
+    public void setIdPrestamo(int idPrestamo) { this.idPrestamo = idPrestamo; }
 
-    public Integer getIdPrestamo() {
-        return idPrestamo;
-    }
+    public CuentaBancaria getCuenta() { return cuenta; }
+    public void setCuenta(CuentaBancaria cuenta) { this.cuenta = cuenta; }
 
-    public void setIdPrestamo(Integer idPrestamo) {
-        this.idPrestamo = idPrestamo;
-    }
+    public Empleado getEmpleado() { return empleado; }
+    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
 
-    public Empleado getEmpleado() {
-        return empleado;
-    }
+    public BigDecimal getMonto() { return monto; }
+    public void setMonto(BigDecimal monto) { this.monto = monto; }
 
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
-    }
+    public BigDecimal getInteres() { return interes; }
+    public void setInteres(BigDecimal interes) { this.interes = interes; }
 
-    public Double getMonto() {
-        return monto;
-    }
+    public int getPlazoAnios() { return plazoAnios; }
+    public void setPlazoAnios(int plazoAnios) { this.plazoAnios = plazoAnios; }
 
-    public void setMonto(Double monto) {
-        this.monto = monto;
-    }
+    public BigDecimal getCuotaMensual() { return cuotaMensual; }
+    public void setCuotaMensual(BigDecimal cuotaMensual) { this.cuotaMensual = cuotaMensual; }
 
-    public Integer getPlazoMeses() {
-        return plazoMeses;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
-    public void setPlazoMeses(Integer plazoMeses) {
-        this.plazoMeses = plazoMeses;
-    }
-
-    public Double getTasaInteres() {
-        return tasaInteres;
-    }
-
-    public void setTasaInteres(Double tasaInteres) {
-        this.tasaInteres = tasaInteres;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public Date getFechaSolicitud() {
-        return fechaSolicitud;
-    }
-
-    public void setFechaSolicitud(Date fechaSolicitud) {
-        this.fechaSolicitud = fechaSolicitud;
-    }
+    public Date getFechaApertura() { return fechaApertura; }
+    public void setFechaApertura(Date fechaApertura) { this.fechaApertura = fechaApertura; }
 }

@@ -30,9 +30,13 @@
         .sidebar .nav-menu a.active { background-color: #006B3F; color: white; }
         .main-content { margin-left: 260px; margin-top: 60px; padding: 30px; width: 100%; }
         .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 20px; }
-        .tabla-sucursales { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .tabla-sucursales th, .tabla-sucursales td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        .tabla-sucursales th { background-color: #f9f9f9; }
+
+        /* Renombrado para que ambas tablas usen el mismo estilo */
+        .tabla-datos { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .tabla-datos th, .tabla-datos td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .tabla-datos th { background-color: #f9f9f9; }
+        .no-data { color: #777; font-style: italic; }
+
         .form-nueva-sucursal { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; align-items: flex-end; }
         .form-group { margin-bottom: 15px; }
         .form-group label { font-weight: 500; display: block; margin-bottom: 5px; }
@@ -44,6 +48,12 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .form-grid .full-width { grid-column: 1 / -1; }
         .error-field { color: #D8000C; font-size: 0.85em; display: block; margin-top: 4px;}
+
+        /* Estilos para botones de acción */
+        .btn-aprobar { background-color: #007A45 !important; }
+        .btn-rechazar { background-color: #D8000C !important; }
+        .btn-submit[disabled] { background-color: #aaa !important; cursor: not-allowed; }
+
     </style>
 </h:head>
 
@@ -120,43 +130,22 @@
                     <div class="card">
                         <h2>Gerentes Asignados y Sucursales</h2>
                         <h:dataTable value="#{gerenteGeneralBean.listaGerentesSucursal}" var="emp"
-                                     styleClass="tabla-sucursales" rendered="#{not empty gerenteGeneralBean.listaGerentesSucursal}">
-
-                            <h:column>
-                                <f:facet name="header">Sucursal</f:facet>
-                                #{emp.sucursal.nombre}
+                                     styleClass="tabla-datos" rendered="#{not empty gerenteGeneralBean.listaGerentesSucursal}">
+                            <h:column><f:facet name="header">Sucursal</f:facet>#{emp.sucursal.nombre}</h:column>
+                            <h:column><f:facet name="header">Gerente Asignado</f:facet>#{emp.persona.nombres} #{emp.persona.apellidos}</h:column>
+                            <h:column><f:facet name="header">DUI Gerente</f:facet>#{emp.persona.dui}</h:column>
+                            <h:column><f:facet name="header">Salario</f:facet>
+                                <h:outputText value="#{emp.salario}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
                             </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Gerente Asignado</f:facet>
-                                #{emp.persona.nombres} #{emp.persona.apellidos}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">DUI Gerente</f:facet>
-                                #{emp.persona.dui}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Salario</f:facet>
-                                <h:outputText value="#{emp.salario}">
-                                    <f:convertNumber type="currency" currencySymbol="$" />
-                                </h:outputText>
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Estado Empleado</f:facet>
-                                #{emp.estado}
-                            </h:column>
-
-                            <h:column>
-                                <f:facet name="header">Fecha Contratación</f:facet>
+                            <h:column><f:facet name="header">Estado Empleado</f:facet>#{emp.estado}</h:column>
+                            <h:column><f:facet name="header">Fecha Contratación</f:facet>
                                 <h:outputText value="#{emp.fechaContratacion}"><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
                             </h:column>
                         </h:dataTable>
-                        <h:outputText value="No hay Gerentes de Sucursal asignados."
+                        <h:outputText value="No hay Gerentes de Sucursal asignados." styleClass="no-data"
                                       rendered="#{empty gerenteGeneralBean.listaGerentesSucursal}" />
                     </div>
+
                     <div class="card">
                         <h2>Crear y Asignar Nuevo Gerente de Sucursal</h2>
                         <h:form id="formGerenteSucursal">
@@ -241,12 +230,87 @@
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{gerenteGeneralBean.vistaActual == 'personal'}">
-                    <h2>Gestión de Acciones de Personal</h2>
-                    <p>Esta sección está en construcción.</p>
+                    <div class="card">
+                        <h2>Gestión de Acciones de Personal</h2>
+
+                        <h:form id="formAcciones">
+                            <h:dataTable value="#{gerenteGeneralBean.listaAccionesPendientes}" var="accion"
+                                         styleClass="tabla-datos" rendered="#{not empty gerenteGeneralBean.listaAccionesPendientes}">
+
+                                <h:column><f:facet name="header">ID Acción</f:facet>#{accion.idAccion}</h:column>
+                                <h:column><f:facet name="header">Tipo</f:facet>
+                                    <h:outputText value="#{accion.tipoAccion}"
+                                                  style="font-weight: bold; color: #{accion.tipoAccion == 'CONTRATACION' ? 'green' : 'red'};" />
+                                </h:column>
+                                <h:column><f:facet name="header">Empleado</f:facet>
+                                    #{accion.empleado.persona.nombres} #{accion.empleado.persona.apellidos}
+                                </h:column>
+                                <h:column><f:facet name="header">Cargo</f:facet>
+                                    #{accion.empleado.cargo}
+                                </h:column>
+                                <h:column><f:facet name="header">Motivo</f:facet>
+                                    #{accion.motivo}
+                                </h:column>
+                                <h:column><f:facet name="header">Fecha Solicitud</f:facet>
+                                    <h:outputText value="#{accion.fechaSolicitud}"><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
+                                </h:column>
+                                <h:column><f:facet name="header">Estado</f:facet>
+                                    <h:outputText value="#{accion.estado}" style="font-weight: bold; color: orange;" />
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Acciones</f:facet>
+                                    <h:commandButton value="Aprobar"
+                                                     action="#{gerenteGeneralBean.aprobarAccion(accion)}"
+                                                     styleClass="btn-submit btn-aprobar" style="margin-right: 5px;">
+                                        <f:ajax execute="@form" render=":panelContenido" />
+                                    </h:commandButton>
+
+                                    <h:commandButton value="Rechazar"
+                                                     action="#{gerenteGeneralBean.rechazarAccion(accion)}"
+                                                     styleClass="btn-submit btn-rechazar">
+                                        <f:ajax execute="@form" render=":panelContenido" />
+                                    </h:commandButton>
+                                </h:column>
+
+                            </h:dataTable>
+                            <h:outputText value="No hay acciones de personal pendientes de aprobación." styleClass="no-data"
+                                          rendered="#{empty gerenteGeneralBean.listaAccionesPendientes}" />
+                        </h:form>
+                    </div>
                 </h:panelGroup>
+
                 <h:panelGroup rendered="#{gerenteGeneralBean.vistaActual == 'movimientos'}">
-                    <h2>Visor de Movimientos Globales</h2>
-                    <p>Esta sección está en construcción.</p>
+                    <div class="card">
+                        <h2>Visor de Movimientos Globales (Últimos 100)</h2>
+
+                        <h:dataTable value="#{gerenteGeneralBean.listaTodosMovimientos}" var="mov"
+                                     styleClass="tabla-datos" rendered="#{not empty gerenteGeneralBean.listaTodosMovimientos}">
+
+                            <h:column><f:facet name="header">ID Mov.</f:facet>#{mov.idMovimiento}</h:column>
+
+                            <h:column><f:facet name="header">Fecha</f:facet>
+                                <h:outputText value="#{mov.fechaMovimiento}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm" /></h:outputText>
+                            </h:column>
+
+                            <h:column><f:facet name="header">Tipo</f:facet>#{mov.tipoMovimiento.nombre}</h:column>
+
+                            <h:column><f:facet name="header">Monto</f:facet>
+                                <h:outputText value="#{mov.monto}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
+                            </h:column>
+
+                            <h:column><f:facet name="header">Cuenta Origen</f:facet>
+                                #{mov.cuentaOrigen != null ? mov.cuentaOrigen.numeroCuenta : 'N/A (Depósito)'}
+                            </h:column>
+
+                            <h:column><f:facet name="header">Cuenta Destino</f:facet>
+                                #{mov.cuentaDestino != null ? mov.cuentaDestino.numeroCuenta : 'N/A (Retiro)'}
+                            </h:column>
+
+                        </h:dataTable>
+                        <h:outputText value="No se han encontrado movimientos en el sistema." styleClass="no-data"
+                                      rendered="#{empty gerenteGeneralBean.listaTodosMovimientos}" />
+                    </div>
                 </h:panelGroup>
 
             </h:panelGroup>
